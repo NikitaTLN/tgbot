@@ -84,7 +84,6 @@ def format_race_message(race: dict) -> str:
     track = race.get("track", "—")
     laps = race.get("laps", "—")
     race_date = race.get("race_date", "")
-    max_pilots = race.get("max_pilots", "—")
     cars_raw = race.get("cars")
     cars: list[str] = []
     if isinstance(cars_raw, list):
@@ -103,13 +102,20 @@ def format_race_message(race: dict) -> str:
         except (ValueError, TypeError):
             date_str = race_date
 
+    stages_raw = race.get("stages", [])
+    stages = sorted(stages_raw, key=lambda s: s.get("n", 0)) if stages_raw else []
+    total_laps = sum(s.get("laps", 0) for s in stages)
+
     lines = [
         f"🏁 <b>{name}</b>",
         f"📍 Трасса: {track}",
-        f"🔄 Кругов: {laps}",
         f"📅 Дата: {date_str}",
-        f"👥 Макс. пилотов: {max_pilots}",
     ]
+    if stages:
+        stages_str = " + ".join(f"{s['laps']} кр." for s in stages)
+        lines.append(f"🏁 Стейджи: {stages_str} = {total_laps} кр.")
+    else:
+        lines.append(f"🔄 Кругов: {laps}")
     if cars:
         lines.append(f"🚗 Машины: {', '.join(cars)}")
 
