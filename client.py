@@ -112,8 +112,9 @@ def format_race_message(race: dict) -> str:
         f"📅 Дата: {date_str}",
     ]
     if stages:
-        stages_str = " + ".join(f"{s['laps']} кр." for s in stages)
-        lines.append(f"🏁 Стейджи: {stages_str} = {total_laps} кр.")
+        for s in stages:
+            lines.append(f"  ● Стейдж {s['n']}: {s['laps']} кр.")
+        lines.append(f"  ────────  = {total_laps} кр.")
     else:
         lines.append(f"🔄 Кругов: {laps}")
     if cars:
