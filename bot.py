@@ -23,38 +23,14 @@ class RaceNotifier:
         self._setup_handlers()
 
     def _setup_handlers(self):
-        @self.dp.my_chat_member()
-        async def on_my_chat_member(update: types.ChatMemberUpdated):
-            chat = update.chat
-            logger.info(
-                "Bot added to chat: id=%s type=%s title=%s",
-                chat.id, chat.type, chat.title,
-            )
-
-        @self.dp.message()
-        async def on_message(msg: types.Message):
-            chat = msg.chat
-            logger.info(
-                "Message from chat: id=%s type=%s title=%s",
-                chat.id, chat.type, chat.title,
-            )
-            await msg.reply(
-                f"This chat's ID is <code>{chat.id}</code>\n"
-                f"Type: {chat.type}\n"
-                f"Title: {chat.title or '—'}"
-            )
-
         @self.dp.channel_post()
         async def on_channel_post(msg: types.Message):
             chat = msg.chat
-            logger.info(
-                "Channel post from chat: id=%s type=%s title=%s",
-                chat.id, chat.type, chat.title,
-            )
-            await msg.reply(
-                f"This channel's ID is <code>{chat.id}</code>\n"
-                f"Title: {chat.title or '—'}"
-            )
+            if self._chat_id is None:
+                await msg.reply(
+                    f"This channel's ID is <code>{chat.id}</code>\n"
+                    f"Title: {chat.title or '—'}"
+                )
 
     async def send_race_notification(self, race: dict[str, Any]):
         if self._chat_id is None:
